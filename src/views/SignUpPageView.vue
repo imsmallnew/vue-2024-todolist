@@ -13,8 +13,6 @@ const router = useRouter();
 
 const api = "https://todolist-api.hexschool.io";
 const eyeOpen = ref(false);
-const showEyeClass = ref('fa-solid fa-eye');
-const closeEyeClass = ref('fa-solid fa-eye-slash');
 const signUpStatus = ref(false);
 const toasts = ref([]);
 
@@ -245,8 +243,6 @@ const signUp = async() => {
             :signUpData= signUpData
             :errors= "errors"
             :eyeOpen= "eyeOpen"
-            :showEyeClass:= "showEyeClass"
-            :closeEyeClass= "closeEyeClass"
             :signUpResponse= "signUpResponse"
             @show-password="showPassword"
             @sign-up="signUp"

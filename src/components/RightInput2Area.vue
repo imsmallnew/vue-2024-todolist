@@ -26,17 +26,18 @@
 </template>
   
 <script setup>
-import { defineProps, defineEmits,} from 'vue';
+import { defineProps, defineEmits, ref} from 'vue';
 
 const emit = defineEmits(['show-password','sign-in','go-page']);
 const props = defineProps({
   signInData: Object,
   errors: Object,
   eyeOpen: Boolean,
-  showEyeClass: String,
-  closeEyeClass: String,
   signInResponse: String,
 });
+
+const showEyeClass = ref('fa-solid fa-eye');
+const closeEyeClass = ref('fa-solid fa-eye-slash');
 
 </script>
   

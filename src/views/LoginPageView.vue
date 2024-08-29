@@ -22,8 +22,6 @@ const signInStatus = ref(false);
 const api = "https://todolist-api.hexschool.io";
 const token = ref('');
 const eyeOpen = ref(false);
-const showEyeClass = ref('fa-solid fa-eye');
-const closeEyeClass = ref('fa-solid fa-eye-slash');
 const toasts = ref([]);
 
 const user = ref({
@@ -220,8 +218,6 @@ onMounted(() => {
             :signInData= signInData
             :errors= "errors"
             :eyeOpen= "eyeOpen"
-            :showEyeClass:= "showEyeClass"
-            :closeEyeClass= "closeEyeClass"
             :signInResponse= "signInResponse"
             @show-password="showPassword"
             @sign-in="signIn"

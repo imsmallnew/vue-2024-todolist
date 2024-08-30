@@ -70,9 +70,11 @@
     <!--刪除更新彈出視窗Start-->
     <AlertModal 
       ref="XsModal"
+      :todoLists="todoLists"
       v-model:editText="editText"
       @update-press="updatePress"
       @delete-press="deletePress"
+      @toggle-toast="toggleToast"
       @clear-text="emit('clear-text')"
     />
     <!--刪除更新彈出視窗End-->
@@ -83,7 +85,7 @@
 import AlertModal from '@/components/AlertModal.vue';
 import { defineProps, defineEmits, defineModel, ref} from 'vue';
 
-const emit = defineEmits(['go-page','create-item','change-tab','toggle-todo','copy-todo','clear-text','delete-todo','update-todo']);
+const emit = defineEmits(['go-page','create-item','change-tab','toggle-todo','copy-todo','clear-text','delete-todo','update-todo','toast-popup']);
 const props = defineProps({
     todoLists: Object,
     filterTodos: Object,
@@ -116,6 +118,10 @@ const updatePress = (value) => {
 
 const deletePress = (value) => {
     emit('delete-todo',value);
+}
+
+const toggleToast = (value) => {
+    emit('toast-popup',value);
 }
 
 </script>

@@ -395,6 +395,7 @@ const toggleTodo = async(item) => {
         @update-todo="updateTodo"
         @delete-todo="deleteTodo"
         @clear-text="clearText"
+        @toast-popup="toastPopup"
       />
     <!--代辦清單內容區End-->
   </div>

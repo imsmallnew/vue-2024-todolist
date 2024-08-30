@@ -33,15 +33,19 @@
 </template>
   
 <script setup>
-import { onMounted, ref, defineEmits, defineModel } from 'vue';
+import { onMounted, ref, defineEmits, defineModel, defineProps } from 'vue';
 import Modal from 'bootstrap/js/dist/modal';
 
 /********* 參數設定 **********/
 
+const props = defineProps({
+    todoLists: Object,
+});
+
 const modal = ref(null);
 const myModal = ref(null);
 const todo = ref({});
-const emit = defineEmits(['clear-text','delete-press','update-press']);
+const emit = defineEmits(['clear-text','delete-press','update-press','toggle-toast']);
 
 let codeType = ref('');
 let editText = defineModel('editText');
@@ -68,11 +72,20 @@ const myModal_hide = () => {
 
 // 按下[確認刪除]/[確認更新]
 const onConfirmBtn = () =>{
-  myModal.value.hide();
   if(codeType.value === 'D'){
-      emit('delete-press',todo.value)
+      emit('delete-press',todo.value);
+      myModal.value.hide();
   }else{
-      emit('update-press',todo.value)
+    // 若更新文字在待辦清單中有重複則無法更新
+    if(props.todoLists
+    .filter(v=>v.id !== todo.value.id)
+    .findIndex(v=>v.content === editText.value) === -1){
+      emit('update-press',todo.value);
+      myModal.value.hide();
+    }else{
+      emit('toggle-toast','更新失敗: 已有相同待辦事項,請調整文字');
+    }
+      
   }
 }
 

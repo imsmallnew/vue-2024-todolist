@@ -13,10 +13,6 @@ import TodoContent from '@/components/TodoContent.vue';
 const router = useRouter();
 const store = useCounterStore();
 const $loading = useLoading({});
-const loader = $loading.show({
-  backgroundColor: '#ffffff',
-  opacity: 0.9,
-});
 
 let loginStatus = ref(false);
 let checkoutResponse = ref('');
@@ -25,7 +21,7 @@ let errorText1 = ref('');
 
 const api = "https://todolist-api.hexschool.io";
 const token = ref('');
-const selectedTab = ref(0);
+const selectedTab = ref('all');
 const editText = ref('');
 const todoLists = ref([])
 const toasts = ref([]);
@@ -36,11 +32,11 @@ const user = ref({
 
 // 按下頁籤顯示指定狀態的項目
 const filterTodos = computed(() => {
-  if(selectedTab.value === 0){ // All Todos
+  if(selectedTab.value === 'all'){ // All Todos
     return todoLists.value
-  }else if(selectedTab.value === 1){ // Pending Todos
+  }else if(selectedTab.value === 'pending'){ // Pending Todos
     return todoLists.value.filter((v) => v.status === false) 
-  }else if(selectedTab.value ===2){ // Done Todos
+  }else if(selectedTab.value === 'done'){ // Done Todos
     return todoLists.value.filter((v) => v.status === true) 
   } 
 });
@@ -121,6 +117,10 @@ const toastPopup = (message) => {
 
 const checkOut = async () =>{
   // 讀出 cookie  
+  const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+  });
   token.value = document.cookie.replace(
         /(?:(?:^|.*;\s*)myToken\s*=\s*([^;]*).*$)|^.*$/,
         "$1",
@@ -132,15 +132,11 @@ const checkOut = async () =>{
             }
           }
         );
-        console.log("token.value:", token.value)
         checkoutResponse.value = response.data;
         user.value = response.data;
         loginStatus.value = response.data?.status        
         if(loginStatus.value){
-          console.log(user.value.nickname + " 你已經登入囉")
           getTodoList()
-        }else{
-          console.log("你還沒登入1!!")                   
         }
         setTimeout(() => {
             loader.hide()
@@ -174,6 +170,10 @@ onMounted(() => {
 })
 
 const signOut= async() => {
+  const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     try{
         const response = await axios.post(`${api}/users/sign_out`,
             {}, //不需要傳參數
@@ -182,21 +182,28 @@ const signOut= async() => {
                     Authorization: `${token.value}`,
                 }
             }
-        );        
+        );  
+        setTimeout(() => {
+            loader.hide()
+        }, 800)      
         signOutResponse.value = response.data.message;
         document.cookie = `myToken=; max-age=0; path=/;`
-        console.log("你已登出,歡迎下次光臨!")
         // 自動回首頁
         goPage()
     } catch(err){
+      setTimeout(() => {
+            loader.hide()
+        }, 800)
       if(err.code === "ERR_NETWORK"){
             toastPopup("錯誤:" + err.message)  
-      }else{
-          console.log("signOut_err:",err.message)
       }
     };
 }
 const getTodoList = async() => {
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     try{
         const response = await axios.get(`${api}/todos`,{
             headers: {
@@ -213,11 +220,15 @@ const getTodoList = async() => {
                editing: false,
             })
         )
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
     } catch(err){
+      setTimeout(() => {
+            loader.hide()
+      }, 800)
       if(err.code === "ERR_NETWORK"){
             toastPopup("錯誤:" + err.message)  
-      }else{
-          console.log("getTodoList_err:",err.message)
       }
     };
 }
@@ -228,6 +239,10 @@ const createTodo = async() => {
   if(ifDuplicateTodo(detail)){
     toastPopup("已有相同待辦事項,請調整文字")
   }else{
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     try{      
         const response = await axios.post(`${api}/todos`,
             {
@@ -248,20 +263,29 @@ const createTodo = async() => {
         }else{
           message = '新增待辦事項失敗,請稍後再試'
         }
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         toastPopup(message);   
     } catch(err){
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         let message = `新增待辦事項失敗, ${err.message}`;
         if(err.code === "ERR_NETWORK"){
             toastPopup("錯誤:" + err.message)  
         }else{
             toastPopup(message);
-            console.log("getTodoList_err:",err.message)
         }
     };
   }    
 }
 
 const updateTodo = async(item) => {
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     let id = item.id
     // 更新用 axios.put
     try{
@@ -284,19 +308,28 @@ const updateTodo = async(item) => {
         }else{
             message = '更新待辦事項失敗,請稍後再試:'+ response.data.message;
         }
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         toastPopup(message);
     } catch(err){
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         let message = `更新待辦事項失敗, ${err.message}`;
         if(err.code === "ERR_NETWORK"){
             toastPopup("錯誤:" + err.message)  
         }else{
             toastPopup(message);
-            console.log("updateTodo_err:",err.message)
         }
     };
 }
 
 const deleteTodo = async(item) => {
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     let id = item.id
     // 刪除用 axios.delete
     try{
@@ -319,19 +352,28 @@ const deleteTodo = async(item) => {
         if(pendingTodos().length === 0 && completedTodos().length !== 0){
           message += ", 恭喜你已完成所有待辦事項!";
         } 
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         toastPopup(message);    
     } catch(err){
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         let message = `刪除待辦事項失敗, ${err.message}`;
         if(err.code === "ERR_NETWORK"){
             toastPopup("錯誤:" + err.message)  
         }else{
             toastPopup(message);
-            console.log("deleteTodo_err:",err.message)
         }
     };
 }
 
 const toggleTodo = async(item) => {
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     let id = item.id
     let message
     // 更新狀態用 axios.patch
@@ -349,11 +391,14 @@ const toggleTodo = async(item) => {
         }else{
             message= '待辦事項更新狀態失敗,請稍後再試:'+ response.data.message
         }
-        getTodoList
+        // getTodoList()
         clearText()
         if(pendingTodos().length === 0 && completedTodos().length !== 0){
           message += ", 恭喜你已完成所有待辦事項!";
-        } 
+        }
+        setTimeout(() => {
+            loader.hide()
+        }, 800) 
         toastPopup(message);
                    
     } catch(err){
@@ -362,7 +407,6 @@ const toggleTodo = async(item) => {
             toastPopup("錯誤:" + err.message)  
         }else{
             toastPopup(message);
-            console.log("toggleTodo_err:",err.message)
         }
     };
 }

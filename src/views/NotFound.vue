@@ -9,7 +9,6 @@ const goPage = () => {
 }
 
 onMounted(() => {
-  console.log("查無此頁, 2秒後導回首頁")
   setTimeout(() =>{
       goPage()
   },2000);    

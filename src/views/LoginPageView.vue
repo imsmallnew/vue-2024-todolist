@@ -107,6 +107,10 @@ const validateError = ()=>{
 
 const signIn = async() => {
     if(validateError()){ return }
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     try{
         const response = await axios.post(`${api}/users/sign_in`,
             signInData.value
@@ -115,7 +119,10 @@ const signIn = async() => {
         // 登入有回應
         signInStatus.value = true;
         signInResponse.value = response.data.token;
-
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
+    
         // 寫入cookie
         document.cookie = `myToken=${response.data.token};  path=/`;
         checkOut();
@@ -132,6 +139,9 @@ const signIn = async() => {
                 password: "",
             };
             signInResponse.value = "";  
+            setTimeout(() => {
+                loader.hide()
+            }, 800)
             
             // 錯誤回應填入至指定欄位
             if(isString(err.response.data?.message)){

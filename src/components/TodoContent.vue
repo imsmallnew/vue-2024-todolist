@@ -14,7 +14,7 @@
         <div  v-if="loginStatus">
           <!--輸入區Start--->
           <div class="inputBox">
-            <input type="text" v-model="editText" value="editText" placeholder="請輸入待辦事項">
+            <input type="text" v-model.trim="editText" value="editText" placeholder="請輸入待辦事項">
             <a href="#" @click.prevent="emit('create-item')" title="新增">
               <i class="fa fa-plus"></i>
             </a>
@@ -23,9 +23,9 @@
           <div class="todoList_list">
             <!--頁籤Start--->          
             <ul class="todoList_tab" v-if="todoLists.length > 0">
-              <li><a href="#" @click.prevent="emit('change-tab',0)" :class="[selectedTab === 0 ? 'active' : '']">全部({{ todoLists.length }})</a></li>
-              <li><a href="#" @click.prevent="emit('change-tab',1)" :class="[selectedTab === 1 ? 'active' : '']">待完成({{ pendingTodos().length}})</a></li>
-              <li><a href="#" @click.prevent="emit('change-tab',2)" :class="[selectedTab === 2 ? 'active' : '']">已完成({{ completedTodos().length}})</a></li>
+              <li><a href="#" @click.prevent="emit('change-tab','all')" :class="[selectedTab === 'all' ? 'active' : '']">全部({{ todoLists.length }})</a></li>
+              <li><a href="#" @click.prevent="emit('change-tab','pending')" :class="[selectedTab === 'pending' ? 'active' : '']">待完成({{ pendingTodos().length}})</a></li>
+              <li><a href="#" @click.prevent="emit('change-tab','done')" :class="[selectedTab === 'done' ? 'active' : '']">已完成({{ completedTodos().length}})</a></li>
             </ul>
             <!--頁籤End--->
             <!--無待辦事項Start--->  
@@ -90,7 +90,7 @@ const props = defineProps({
     todoLists: Object,
     filterTodos: Object,
     loginStatus: Boolean,
-    selectedTab: Number,
+    selectedTab: String,
 });
 
 let editText = defineModel('editText');

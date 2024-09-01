@@ -6,10 +6,12 @@ import { useCounterStore } from '@/stores/counter';
 import LeftSide from '@/components/LeftSide.vue';
 import RightInput4Area from '@/components/RightInput4Area.vue';
 import ToastModal from '@/components/ToastModal.vue';
+import {useLoading} from 'vue-loading-overlay';
 
 /********* 參數設定 **********/
 const store = useCounterStore();
 const router = useRouter();
+const $loading = useLoading({});
 
 const api = "https://todolist-api.hexschool.io";
 const eyeOpen = ref(false);
@@ -145,11 +147,18 @@ watch(() => signUpData.value.password2, (newVal) => {
 
 const signUp = async() => {
     if(validateError()){ return }
-    console.log(signUpData.value)
+    const loader = $loading.show({
+        backgroundColor: '#ffffff',
+        opacity: 0.9,
+    });
     try{
         const response = await axios.post(`${api}/users/sign_up`,
             signUpData.value
         );     
+
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
        
         signUpResponse.value = '註冊成功! 請使用' + signUpData.value.email + '來登入系統';        
         
@@ -182,10 +191,9 @@ const signUp = async() => {
             goPage()
         },2000);
     } catch(err){
-        if (err.response && err.response.status === 400) {
-            console.log('Bad Request: ', err);
-        }
-
+        setTimeout(() => {
+            loader.hide()
+        }, 800)
         // 註冊有回應
         signUpStatus.value = true;
 

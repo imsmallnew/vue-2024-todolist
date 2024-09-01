@@ -13,7 +13,7 @@
           </div>
           <div class="modal-body">
             <p v-if="codeType === 'D'">{{todo.content}}</p>
-            <input v-if="codeType === 'E'" type="text" v-model="editText" value="editText" placeholder="請輸入待辦事項" style="width:100%">
+            <input v-if="codeType === 'E'" type="text" v-model.trim="editText" value="editText" placeholder="請輸入待辦事項" style="width:100%">
           </div>
           <div class="modal-footer">
             <button
@@ -76,10 +76,13 @@ const onConfirmBtn = () =>{
       emit('delete-press',todo.value);
       myModal.value.hide();
   }else{
+    // 若更新文字為空白或是長度0無法更新
+    if(editText.value.trim() === ''){
+      emit('toggle-toast','更新失敗: 待辦事項文字不可為空白');
+    }else if(props.todoLists
     // 若更新文字在待辦清單中有重複則無法更新
-    if(props.todoLists
     .filter(v=>v.id !== todo.value.id)
-    .findIndex(v=>v.content === editText.value) === -1){
+    .findIndex(v=>v.content === editText.value.trim()) === -1){
       emit('update-press',todo.value);
       myModal.value.hide();
     }else{
